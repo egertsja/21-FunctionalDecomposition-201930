@@ -21,38 +21,17 @@ with open('words.txt') as f:
 
 def main():
     while True:
-        prior_guesses = []
         print()
         flag=0
-        guesses_left = int(input('How many wrong guesses do you want allowed? '))
+        guesses = int(input('How many wrong guesses do you want allowed? '))
         min_word = int(input('What minimum length do you want for your word? '))
         word = rand_word(min_word)
         words = ['-'] + ['-']*(len(word)-1)
         #print(make_string(hidden_word),word)
-        while True:
-            (guess2,words,theguess)=guess(word,words)
-            prior_guesses = prior_guesses + [theguess]
-            if guess2 == True:
-                print('Correct!')
-                print()
-                flag=0
-                for k in range(len(words)):
-                    if words[k] == '-':
-                        flag = 1
-                if flag == 0:
-                    break
-            else:
-                guesses_left = guesses_left-1
-                print('Incorrect! Guesses Left:', guesses_left)
-                print()
-            if guesses_left == 0:
-                break
-            print('Your guesses have been:',prior_guesses)
-            #We couldn't really break this all up since it's mostly variable preparations and print statements.
-            #Global variable assignment was also being finicky limiting how much we could put in other functions.
-        if flag == 0:
+        (win_c,lose_c) = game(word,words,guesses)
+        if win_c:
             win_condition(word)
-        elif guesses_left == 0:
+        elif lose_c:
             lose_condition(word)
         if restart() == False:
             break
@@ -78,6 +57,36 @@ def make_string(seq):
     for k in range(len(seq)):
         string = string + seq[k]
     return string
+
+
+
+def game(word,mod_word,guesses_left):
+    lose_c=False
+    win_c=False
+    prior_guesses = []
+    while True:
+        (guess2, words, theguess) = guess(word, mod_word)
+        prior_guesses = prior_guesses + [theguess]
+        if guess2 == True:
+            print('Correct!')
+            print()
+            flag = 0
+            for k in range(len(words)):
+                if words[k] == '-':
+                    flag = 1
+            if flag == 0:
+                win_c=True
+                break
+        else:
+            guesses_left = guesses_left - 1
+            print('Incorrect! Guesses Left:', guesses_left)
+            print()
+        if guesses_left == 0:
+            lose_c = True
+            break
+        print('Your guesses have been:', prior_guesses)
+        print()
+    return (win_c,lose_c)
 
 
 
